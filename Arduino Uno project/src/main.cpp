@@ -1,5 +1,3 @@
-#include <Ultrasonic.h>
-
 /*******************************************************************************
 
 * Copyright (c) 2015 Thomas Telkamp and Matthijs Kooijman
@@ -42,7 +40,7 @@
 
 * violated by this sketch when left running for longer)!
 
- 
+
 
 * To use this sketch, first register your application and device with
 
@@ -60,7 +58,7 @@
 
 *******************************************************************************/
 
- 
+
 
 #include <lmic.h>
 
@@ -76,9 +74,9 @@
 
 Ultrasonic ultrasonic(12,13);
 
- 
 
- 
+
+
 
 // Backwards - LSB
 
@@ -86,7 +84,7 @@ static const u1_t PROGMEM APPEUI[8]= { 0x1B, 0x8F, 0x01, 0xD0, 0x7E, 0xD5, 0xB3,
 
 void os_getArtEui (u1_t* buf) { memcpy_P(buf, APPEUI, 8);}
 
- 
+
 
 // Backwards - LSB
 
@@ -94,7 +92,7 @@ static const u1_t PROGMEM DEVEUI[8]= { 0x12, 0x6E, 0x48, 0xBC, 0x0F, 0x87, 0x2D,
 
 void os_getDevEui (u1_t* buf) { memcpy_P(buf, DEVEUI, 8);}
 
- 
+
 
 // Forwards - MSB
 
@@ -102,11 +100,11 @@ static const u1_t PROGMEM APPKEY[16] = { 0xD1, 0x8F, 0x34, 0x65, 0x08, 0x84, 0xD
 
 void os_getDevKey (u1_t* buf) {  memcpy_P(buf, APPKEY, 16);}
 
- 
+
 
 static osjob_t sendjob;
 
- 
+
 
 // Schedule TX every this many seconds (might become longer due to duty
 
@@ -114,27 +112,27 @@ static osjob_t sendjob;
 
 const unsigned TX_INTERVAL = 600;  //time between readings in secs
 
- 
+
 
 // Pin mapping for BSFrance Lora Feather
 
 const lmic_pinmap lmic_pins = {
 
-    .nss = 8,
+    .nss = 10,
 
     .rxtx = LMIC_UNUSED_PIN,
 
-    .rst = 4,
+    .rst = 9,
 
-    .dio = {7, 1, LMIC_UNUSED_PIN},
+    .dio = {2, 6, 7},
 
 };
 
- 
+
 
  
 
- 
+
 
 void onEvent (ev_t ev) {
 
@@ -178,7 +176,7 @@ void onEvent (ev_t ev) {
 
             Serial.println(F("EV_JOINED"));
 
- 
+
 
             // Disable link check validation (automatically enabled
 
@@ -276,7 +274,7 @@ void onEvent (ev_t ev) {
 
 }
 
- 
+
 
 void do_send(osjob_t* j){
 
@@ -288,13 +286,13 @@ void do_send(osjob_t* j){
 
     } else {
 
-       
 
-        
+
+
 
   // Prepare upstream data transmission at the next possible time.
 
- 
+
 
   float measuredvbat = analogRead(VBATPIN);
 
@@ -306,7 +304,7 @@ void do_send(osjob_t* j){
 
   float level = (ultrasonic.distanceRead());
 
- 
+
 
                 // make a buffer to put the data in, and put the two figures in, separated by comma
 
@@ -318,13 +316,13 @@ void do_send(osjob_t* j){
 
   dtostrf(level, 5, 0, buff+strlen(buff));
 
- 
+
 
                 // send the message
 
   LMIC_setTxData2(1,buff,strlen(buff),0);
 
- 
+
 
     Serial.println(F("Packet queued"));
 
@@ -334,11 +332,11 @@ void do_send(osjob_t* j){
 
 }
 
- 
+
 
 void setup() {
 
- 
+
 
     delay(2500);   // Give time to the ATMega32u4 port to wake up and be recognized by the OS.
 
@@ -348,7 +346,7 @@ void setup() {
 
     Serial.println(F("Starting"));
 
- 
+
 
     // LMIC init
 
@@ -358,13 +356,13 @@ void setup() {
 
     LMIC_reset();
 
-   
+
 
      // Let LMIC compensate for +/- 1% clock error
 
     LMIC_setClockError(MAX_CLOCK_ERROR * 1 / 100);
 
- 
+
 
     // Start job (sending automatically starts OTAA too)
 
@@ -372,7 +370,7 @@ void setup() {
 
 }
 
- 
+
 
 void loop() {
 
@@ -380,7 +378,7 @@ void loop() {
 
 }
 
- 
+
 
 void get_tank_level() {
 
@@ -392,11 +390,11 @@ void get_tank_level() {
 
 }
 
- 
+
 
 void getBatteryVoltage() {
 
- 
+
 
   float measuredvbat = analogRead(VBATPIN);
 
