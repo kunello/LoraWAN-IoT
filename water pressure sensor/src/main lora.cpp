@@ -17,9 +17,7 @@
 *
 
 * This example sends a valid LoRaWAN packet with payload "Hello,
-
 * world!", using frequency and encryption settings matching those of
-
 * the The Things Network.
 
 *
